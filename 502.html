@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>502 · Bad Gateway</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+              radial-gradient(ellipse at 50% 30%, #2a1810 0%, #14080a 60%, #000000 100%);
+      background-color: #0a0608;
+      color: #f0e6e0;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(240, 230, 224, 0.45);
+      letter-spacing: 0.15em;
+      z-index: 10;
+    }
+    .status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ff6b35;
+      box-shadow: 0 0 8px #ff6b35;
+      margin-right: 8px;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .status-bar .code {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(240, 230, 224, 0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    /* 中央网关容器 */
+    .gateway-wrap {
+      position: relative;
+      width: 360px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 背景巨型 502 */
+    .big-code {
+      position: absolute;
+      font-size: 240px;
+      font-weight: 800;
+      color: rgba(255, 107, 53, 0.06);
+      letter-spacing: -0.05em;
+      user-select: none;
+      z-index: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* 服务器(左) ↔ 服务器(右) */
+    .server {
+      position: absolute;
+      width: 90px;
+      height: 130px;
+      background: linear-gradient(180deg, #1a1a1d 0%, #0d0d10 100%);
+      border: 1.5px solid rgba(255, 107, 53, 0.4);
+      border-radius: 8px;
+      z-index: 2;
+      box-shadow:
+              0 0 30px rgba(255, 107, 53, 0.15),
+              inset 0 0 20px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    .server::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      border-radius: 4px;
+    }
+    .server-left {
+      left: 0;
+      animation: serverShake 0.3s ease-in-out infinite;
+    }
+    .server-right {
+      right: 0;
+      animation: serverShake 0.3s ease-in-out infinite 0.15s;
+    }
+
+    @keyframes serverShake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-1px, 1px); }
+      50% { transform: translate(1px, -1px); }
+      75% { transform: translate(-1px, -1px); }
+    }
+
+    /* 服务器上的状态灯 */
+    .server-lights {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 3;
+    }
+    .light {
+      width: 50px;
+      height: 4px;
+      background: rgba(255, 107, 53, 0.15);
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .light::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+      animation: dataFlow 1.2s linear infinite;
+    }
+    .light:nth-child(2)::before { animation-delay: 0.2s; }
+    .light:nth-child(3)::before { animation-delay: 0.4s; }
+    .light:nth-child(4)::before { animation-delay: 0.6s; }
+
+    @keyframes dataFlow {
+      to { left: 100%; }
+    }
+
+    /* 中间的破损连接线 */
+    .cable {
+      position: absolute;
+      top: 50%;
+      left: 90px;
+      right: 90px;
+      height: 4px;
+      transform: translateY(-50%);
+      z-index: 1;
+      overflow: hidden;
+    }
+    .cable::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+              90deg,
+              #ff6b35 0px,
+              #ff6b35 8px,
+              transparent 8px,
+              transparent 14px
+      );
+      opacity: 0.6;
+      animation: cableMove 0.8s linear infinite;
+    }
+    .cable::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ff6b35;
+      border-radius: 50%;
+      box-shadow: 0 0 16px #ff6b35;
+      animation: bang 1.5s ease-out infinite;
+    }
+    @keyframes cableMove {
+      to { background-position: 22px 0; }
+    }
+    @keyframes bang {
+      0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* 火花粒子 */
+    .spark {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #ff6b35;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #ff6b35;
+      animation: sparkOut 1.5s ease-out infinite;
+    }
+    .spark:nth-child(1) { top: 40%; left: 45%; animation-delay: 0s; }
+    .spark:nth-child(2) { top: 55%; left: 50%; animation-delay: 0.3s; }
+    .spark:nth-child(3) { top: 45%; left: 55%; animation-delay: 0.6s; }
+    .spark:nth-child(4) { top: 50%; left: 48%; animation-delay: 0.9s; }
+    @keyframes sparkOut {
+      0% { opacity: 0; transform: translate(0, 0) scale(1); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--tx, 30px), var(--ty, -20px)) scale(0); }
+    }
+
+    /* 文案区 */
+    .message {
+      text-align: center;
+      z-index: 5;
+      max-width: 520px;
+    }
+    .message h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .message h1 .accent {
+      color: #ff6b35;
+    }
+    .message p {
+      font-size: 14px;
+      color: rgba(240, 230, 224, 0.55);
+      line-height: 1.6;
+    }
+    .message .mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(240, 230, 224, 0.4);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* 重试按钮 */
+    .retry-btn {
+      padding: 12px 32px;
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.4);
+      color: #ff6b35;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 5;
+    }
+    .retry-btn:hover {
+      background: rgba(255, 107, 53, 0.2);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+      transform: translateY(-1px);
+    }
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 底部 */
+    .footer {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(240, 230, 224, 0.35);
+      letter-spacing: 0.2em;
+      text-align: center;
+      z-index: 5;
+    }
+    .footer .id {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(240, 230, 224, 0.5);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .big-code { font-size: 160px; }
+      .gateway-wrap { width: 280px; height: 220px; }
+      .server { width: 70px; height: 100px; }
+      .light { width: 40px; }
+      .cable { left: 70px; right: 70px; }
+      .message h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="status-bar">
+  <div><span class="dot"></span>UPSTREAM · OFFLINE</div>
+  <div class="code">502 BAD GATEWAY</div>
+</div>
+
+<div class="gateway-wrap">
+  <div class="big-code">502</div>
+
+  <div class="server server-left">
+    <div class="server-lights">
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+    </div>
+  </div>
+
+  <div class="server server-right">
+    <div class="server-lights">
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+      <div class="light"></div>
+    </div>
+  </div>
+
+  <div class="cable">
+    <span class="spark"></span>
+    <span class="spark"></span>
+    <span class="spark"></span>
+    <span class="spark"></span>
+  </div>
+</div>
+
+<div class="message">
+  <h1>网关<span class="accent">无响应</span></h1>
+  <p>上游服务器返回了无效响应，网关无法完成您的请求。</p>
+  <div class="mono">[nginx/1.24.0 · 502 · ERR_BAD_GATEWAY]</div>
+</div>
+
+<button class="retry-btn" onclick="location.reload()">⟳ RETRY CONNECTION</button>
+
+<div class="footer">
+  <div class="id">REQ_ID · 502-X9B2-7F4D-L8M3</div>
+  <div>PLEASE WAIT OR CONTACT ADMIN</div>
+</div>
+</body>
+</html>

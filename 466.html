@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>466 · 应用维护中</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+              radial-gradient(ellipse at 50% 70%, #1a2530 0%, #0d1419 60%, #000000 100%);
+      background-color: #0d1419;
+      color: #e6edf3;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(230, 237, 243, 0.45);
+      letter-spacing: 0.15em;
+      z-index: 10;
+    }
+    .status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffc107;
+      box-shadow: 0 0 8px #ffc107;
+      margin-right: 8px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .status-bar .code {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 237, 243, 0.6);
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* 中央维护容器 */
+    .maintain-wrap {
+      position: relative;
+      width: 480px;
+      max-width: 90vw;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* 背景巨型 466 */
+    .big-code {
+      position: absolute;
+      font-size: 240px;
+      font-weight: 800;
+      color: rgba(255, 193, 7, 0.05);
+      letter-spacing: -0.05em;
+      user-select: none;
+      z-index: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* 路面虚线 */
+    .ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .ground::before {
+      content: "";
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(
+              90deg,
+              rgba(255, 193, 7, 0.4) 0px,
+              rgba(255, 193, 7, 0.4) 20px,
+              transparent 20px,
+              transparent 40px
+      );
+      animation: groundMove 0.8s linear infinite;
+    }
+    @keyframes groundMove {
+      to { background-position: -40px 0; }
+    }
+
+    /* 用户提供的 loader 原样 */
+    .loader {
+      width: fit-content;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 3;
+    }
+    .truckWrapper {
+      width: 200px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: visible;
+    }
+    .truckBody {
+      width: 130px;
+      height: fit-content;
+      margin-bottom: 6px;
+      animation: motion 1s linear infinite;
+    }
+    @keyframes motion {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(3px); }
+      100% { transform: translateY(0px); }
+    }
+    .truckTires {
+      width: 130px;
+      height: fit-content;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0px 10px 0px 15px;
+      position: absolute;
+      bottom: 0;
+    }
+    .truckTires svg {
+      width: 24px;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .road {
+      width: 100%;
+      height: 1.5px;
+      background-color: #282828;
+      position: relative;
+      bottom: 0;
+      align-self: flex-end;
+      border-radius: 3px;
+    }
+    .road::before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 100%;
+      background-color: #282828;
+      right: -50%;
+      border-radius: 3px;
+      animation: roadAnimation 1.4s linear infinite;
+      border-left: 10px solid white;
+    }
+    .road::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 100%;
+      background-color: #282828;
+      right: -65%;
+      border-radius: 3px;
+      animation: roadAnimation 1.4s linear infinite;
+      border-left: 4px solid white;
+    }
+    .lampPost {
+      position: absolute;
+      bottom: 0;
+      right: -90%;
+      height: 90px;
+      animation: roadAnimation 1.4s linear infinite;
+    }
+    @keyframes roadAnimation {
+      0% { transform: translateX(0px); }
+      100% { transform: translateX(-350px); }
+    }
+
+    /* 围栏警告线 */
+    .caution {
+      position: absolute;
+      top: 20%;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background: repeating-linear-gradient(
+              45deg,
+              #ffc107 0px,
+              #ffc107 14px,
+              #1a1a1a 14px,
+              #1a1a1a 28px
+      );
+      opacity: 0.85;
+      z-index: 2;
+      box-shadow: 0 0 12px rgba(255, 193, 7, 0.3);
+    }
+
+    /* 工具箱小图标 */
+    .toolbox {
+      position: absolute;
+      top: 20%;
+      right: 10%;
+      width: 36px;
+      height: 36px;
+      z-index: 3;
+      opacity: 0.7;
+      animation: toolBob 2s ease-in-out infinite;
+    }
+    @keyframes toolBob {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-6px) rotate(5deg); }
+    }
+
+    /* 文案区 */
+    .message {
+      text-align: center;
+      z-index: 5;
+      max-width: 520px;
+    }
+    .message h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .message h1 .accent {
+      color: #ffc107;
+    }
+    .message p {
+      font-size: 14px;
+      color: rgba(230, 237, 243, 0.55);
+      line-height: 1.6;
+    }
+    .message .mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 237, 243, 0.4);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* 倒计时 */
+    .eta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      z-index: 5;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .eta-block {
+      background: rgba(255, 193, 7, 0.08);
+      border: 1px solid rgba(255, 193, 7, 0.2);
+      padding: 8px 14px;
+      border-radius: 4px;
+      min-width: 56px;
+      text-align: center;
+    }
+    .eta-block .num {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffc107;
+      display: block;
+    }
+    .eta-block .lbl {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(230, 237, 243, 0.4);
+    }
+
+    /* 底部 */
+    .footer {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(230, 237, 243, 0.35);
+      letter-spacing: 0.2em;
+      text-align: center;
+      z-index: 5;
+    }
+    .footer .id {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 237, 243, 0.5);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .big-code { font-size: 160px; }
+      .maintain-wrap { width: 320px; height: 220px; }
+      .message h1 { font-size: 20px; }
+      .eta-block { min-width: 48px; padding: 6px 10px; }
+      .eta-block .num { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="status-bar">
+  <div><span class="dot"></span>SCHEDULED · MAINTENANCE</div>
+  <div class="code">466 SERVICE UPDATING</div>
+</div>
+
+<div class="maintain-wrap">
+  <div class="big-code">466</div>
+
+  <div class="caution"></div>
+
+  <svg class="toolbox" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 8H2V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V8Z" stroke="#ffc107" stroke-width="1.5"/>
+    <path d="M7 8V5C7 3.89543 7.89543 3 9 3H15C16.1046 3 17 3.89543 17 5V8" stroke="#ffc107" stroke-width="1.5"/>
+    <circle cx="12" cy="14" r="1.5" fill="#ffc107"/>
+    <path d="M12 15.5V17.5" stroke="#ffc107" stroke-width="1.5"/>
+  </svg>
+
+  <div class="ground"></div>
+
+  <div class="loader">
+    <div class="truckWrapper">
+      <div class="truckBody">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 198 93"
+                class="trucksvg"
+        >
+          <path
+                  stroke-width="3"
+                  stroke="#282828"
+                  fill="#F83D3D"
+                  d="M135 22.5H177.264C178.295 22.5 179.22 23.133 179.594 24.0939L192.33 56.8443C192.442 57.1332 192.5 57.4404 192.5 57.7504V89C192.5 90.3807 191.381 91.5 190 91.5H135C133.619 91.5 132.5 90.3807 132.5 89V25C132.5 23.6193 133.619 22.5 135 22.5Z"
+          ></path>
+          <path
+                  stroke-width="3"
+                  stroke="#282828"
+                  fill="#7D7C7C"
+                  d="M146 33.5H181.741C182.779 33.5 183.709 34.1415 184.078 35.112L190.538 52.112C191.16 53.748 189.951 55.5 188.201 55.5H146C144.619 55.5 143.5 54.3807 143.5 53V36C143.5 34.6193 144.619 33.5 146 33.5Z"
+          ></path>
+          <path
+                  stroke-width="2"
+                  stroke="#282828"
+                  fill="#282828"
+                  d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z"
+          ></path>
+          <rect
+                  stroke-width="2"
+                  stroke="#282828"
+                  fill="#FFFCAB"
+                  rx="1"
+                  height="7"
+                  width="5"
+                  y="63"
+                  x="187"
+          ></rect>
+          <rect
+                  stroke-width="2"
+                  stroke="#282828"
+                  fill="#282828"
+                  rx="1"
+                  height="11"
+                  width="4"
+                  y="81"
+                  x="193"
+          ></rect>
+          <rect
+                  stroke-width="3"
+                  stroke="#282828"
+                  fill="#DFDFDF"
+                  rx="2.5"
+                  height="90"
+                  width="121"
+                  y="1.5"
+                  x="6.5"
+          ></rect>
+          <rect
+                  stroke-width="2"
+                  stroke="#282828"
+                  fill="#DFDFDF"
+                  rx="2"
+                  height="4"
+                  width="6"
+                  y="84"
+                  x="1"
+          ></rect>
+        </svg>
+      </div>
+      <div class="truckTires">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 30 30"
+                class="tiresvg"
+        >
+          <circle
+                  stroke-width="3"
+                  stroke="#282828"
+                  fill="#282828"
+                  r="13.5"
+                  cy="15"
+                  cx="15"
+          ></circle>
+          <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
+        </svg>
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 30 30"
+                class="tiresvg"
+        >
+          <circle
+                  stroke-width="3"
+                  stroke="#282828"
+                  fill="#282828"
+                  r="13.5"
+                  cy="15"
+                  cx="15"
+          ></circle>
+          <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
+        </svg>
+      </div>
+      <div class="road"></div>
+
+      <svg
+              xml:space="preserve"
+              viewBox="0 0 453.459 453.459"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              xmlns="http://www.w3.org/2000/svg"
+              id="Capa_1"
+              version="1.1"
+              fill="#000000"
+              class="lampPost"
+      >
+          <path
+                  d="M252.882,0c-37.781,0-68.686,29.953-70.245,67.358h-6.917v8.954c-26.109,2.163-45.463,10.011-45.463,19.366h9.993
+c-1.65,5.146-2.507,10.54-2.507,16.017c0,28.956,23.558,52.514,52.514,52.514c28.956,0,52.514-23.558,52.514-52.514
+c0-5.478-0.856-10.872-2.506-16.017h9.992c0-9.354-19.352-17.204-45.463-19.366v-8.954h-6.149C200.189,38.779,223.924,16,252.882,16
+c29.952,0,54.32,24.368,54.32,54.32c0,28.774-11.078,37.009-25.105,47.437c-17.444,12.968-37.216,27.667-37.216,78.884v113.914
+h-0.797c-5.068,0-9.174,4.108-9.174,9.177c0,2.844,1.293,5.383,3.321,7.066c-3.432,27.933-26.851,95.744-8.226,115.459v11.202h45.75
+v-11.202c18.625-19.715-4.794-87.527-8.227-115.459c2.029-1.683,3.322-4.223,3.322-7.066c0-5.068-4.107-9.177-9.176-9.177h-0.795
+V196.641c0-43.174,14.942-54.283,30.762-66.043c14.793-10.997,31.559-23.461,31.559-60.277C323.202,31.545,291.656,0,252.882,0z
+M232.77,111.694c0,23.442-19.071,42.514-42.514,42.514c-23.442,0-42.514-19.072-42.514-42.514c0-5.531,1.078-10.957,3.141-16.017
+h78.747C231.693,100.736,232.77,106.162,232.77,111.694z"
+          ></path>
+        </svg>
+    </div>
+  </div>
+</div>
+
+<div class="message">
+  <h1>系统<span class="accent">维护升级</span>中</h1>
+  <p>我们正在努力为用户提供更稳定的服务，预计很快就会回来。</p>
+  <div class="mono">[server/2.4.1 · 466 · ERR_PLANNED_MAINTENANCE]</div>
+</div>
+
+<div class="eta">
+  <div class="eta-block"><span class="num" id="hh">02</span><span class="lbl">HRS</span></div>
+  <div class="eta-block"><span class="num" id="mm">47</span><span class="lbl">MIN</span></div>
+  <div class="eta-block"><span class="num" id="ss">33</span><span class="lbl">SEC</span></div>
+</div>
+
+<div class="footer">
+  <div class="id">REQ_ID · 466-Q8N3-5V7W-Z9P1</div>
+  <div>THANK YOU FOR YOUR PATIENCE</div>
+</div>
+
+<script>
+  // 简单倒计时（2小时47分33秒起算，每秒减1）
+  let total = 2 * 3600 + 47 * 60 + 33;
+  const hh = document.getElementById('hh');
+  const mm = document.getElementById('mm');
+  const ss = document.getElementById('ss');
+  function tick() {
+    if (total <= 0) return;
+    total--;
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    hh.textContent = String(h).padStart(2, '0');
+    mm.textContent = String(m).padStart(2, '0');
+    ss.textContent = String(s).padStart(2, '0');
+  }
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>504 · Gateway Timeout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+              radial-gradient(ellipse at 50% 50%, #1a1525 0%, #0d0a14 60%, #000000 100%);
+      background-color: #0d0a14;
+      color: #ece6f3;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(236, 230, 243, 0.45);
+      letter-spacing: 0.15em;
+      z-index: 10;
+    }
+    .status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #b388ff;
+      box-shadow: 0 0 8px #b388ff;
+      margin-right: 8px;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    .status-bar .code {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(236, 230, 243, 0.6);
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    /* 中央沙漏容器 */
+    .hourglass-wrap {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 背景巨型 504 */
+    .big-code {
+      position: absolute;
+      font-size: 240px;
+      font-weight: 800;
+      color: rgba(179, 136, 255, 0.06);
+      letter-spacing: -0.05em;
+      user-select: none;
+      z-index: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* 旋转光环 */
+    .ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(179, 136, 255, 0.15);
+      z-index: 1;
+      animation: spinReverse 8s linear infinite;
+    }
+    .ring::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      border-top-color: rgba(179, 136, 255, 0.7);
+      border-right-color: rgba(206, 147, 216, 0.5);
+    }
+    .ring-2 {
+      width: 220px;
+      height: 220px;
+      animation: spinReverse 12s linear infinite reverse;
+    }
+    @keyframes spinReverse {
+      to { transform: rotate(-360deg); }
+    }
+
+    /* 咖啡杯 loading */
+    .loader {
+      width: 130px;
+      height: 130px;
+      position: relative;
+      display: flex;
+      justify-items: center;
+      align-items: center;
+      z-index: 3;
+      filter: drop-shadow(0 0 20px rgba(179, 136, 255, 0.35));
+    }
+    .loader .cup {
+      position: absolute;
+      width: 28px;
+      height: 22px;
+      background-color: #fff;
+      border: 1px solid #2e2e2e;
+      z-index: 1;
+      border-radius: 2px 2px 10px 10px;
+      animation: expansion 6s infinite ease-in-out;
+      transform-origin: center;
+    }
+    .cup::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      width: calc(100% - 2px);
+      height: 2px;
+      background: #fed59fca;
+      border: 1px solid #2e2e2ebe;
+      border-radius: 50%;
+    }
+    .cup::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      width: calc(100% - 2px);
+      height: 4px;
+      background: transparent;
+      border: 1px solid #2e2e2e;
+      border-top: none;
+      border-radius: 50%;
+      z-index: -1;
+    }
+    .loader .cup .cup-handle {
+      position: absolute;
+      width: 5px;
+      height: 10px;
+      background-color: #fff;
+      border: 1px solid #2e2e2e;
+      right: -5px;
+      top: 3px;
+      border-radius: 2px 10px 20px 2px;
+    }
+    .loader .cup .smoke {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      width: 16px;
+      height: 26px;
+      background: rgba(107, 102, 102, 0.433);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      animation: rise 6s infinite ease-in-out;
+      filter: blur(8px);
+    }
+    .loader .cup .smoke.one {
+      animation-delay: 0s;
+    }
+    .loader .cup .smoke.two {
+      animation-delay: 1s;
+    }
+    .loader .cup .smoke.three {
+      animation-delay: 2s;
+    }
+    .loader .load {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      opacity: 0.6;
+      top: 60%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: -1;
+      color: #b388ff;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    @keyframes expansion {
+      0% {
+        width: 28px;
+        transform: translateX(0);
+      }
+      40% {
+        width: 110px;
+        transform: translateX(0);
+      }
+      80% {
+        width: 28px;
+        transform: translateX(70px);
+      }
+      90% {
+        width: 110px;
+        transform: translateX(0);
+      }
+      100% {
+        width: 28px;
+        transform: translateX(0);
+      }
+    }
+    @keyframes rise {
+      0% {
+        transform: translate(-50%, 0) scale(0.4);
+        opacity: 0;
+      }
+      30% {
+        opacity: 0.7;
+      }
+      60% {
+        opacity: 0.4;
+      }
+      100% {
+        transform: translate(-50%, -90px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* 文案区 */
+    .message {
+      text-align: center;
+      z-index: 5;
+      max-width: 520px;
+    }
+    .message h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .message h1 .accent {
+      color: #b388ff;
+    }
+    .message p {
+      font-size: 14px;
+      color: rgba(236, 230, 243, 0.55);
+      line-height: 1.6;
+    }
+    .message .mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(236, 230, 243, 0.4);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* 超时计时条 */
+    .timeout-bar {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+    }
+    .timeout-bar .label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(236, 230, 243, 0.5);
+      letter-spacing: 0.15em;
+    }
+    .timeout-bar .label .timing {
+      color: #b388ff;
+    }
+    .bar-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #b388ff, #ce93d8, #b388ff);
+      border-radius: 2px;
+      transform-origin: left center;
+      animation: timeoutDrain 8s linear infinite;
+      box-shadow: 0 0 8px rgba(179, 136, 255, 0.6);
+    }
+    @keyframes timeoutDrain {
+      0%   { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
+    }
+
+    /* 重试按钮 */
+    .retry-btn {
+      padding: 12px 32px;
+      background: rgba(179, 136, 255, 0.1);
+      border: 1px solid rgba(179, 136, 255, 0.4);
+      color: #b388ff;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 5;
+    }
+    .retry-btn:hover {
+      background: rgba(179, 136, 255, 0.2);
+      box-shadow: 0 0 20px rgba(179, 136, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 底部 */
+    .footer {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(236, 230, 243, 0.35);
+      letter-spacing: 0.2em;
+      text-align: center;
+      z-index: 5;
+    }
+    .footer .id {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(236, 230, 243, 0.5);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .big-code { font-size: 160px; }
+      .hourglass-wrap { width: 260px; height: 260px; }
+      .loader { width: 110px; height: 110px; }
+      .ring { width: 220px; height: 220px; }
+      .ring-2 { width: 180px; height: 180px; }
+      .message h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="status-bar">
+  <div><span class="dot"></span>UPSTREAM · TIMEOUT</div>
+  <div class="code">504 GATEWAY TIMEOUT</div>
+</div>
+
+<div class="hourglass-wrap">
+  <div class="big-code">504</div>
+  <div class="ring"></div>
+  <div class="ring ring-2"></div>
+
+  <div class="loader">
+    <div class="cup">
+      <div class="cup-handle"></div>
+      <div class="smoke one"></div>
+      <div class="smoke two"></div>
+      <div class="smoke three"></div>
+    </div>
+    <div class="load">BREWING&nbsp;REQUEST</div>
+  </div>
+</div>
+
+<div class="message">
+  <h1>网关请求<span class="accent">超时</span></h1>
+  <p>上游服务器未在规定时间内响应，网关已放弃等待。请稍后重试，或检查您的网络连接。</p>
+  <div class="mono">[nginx/1.24.0 · 504 · ERR_GATEWAY_TIMEOUT · 30s]</div>
+</div>
+
+<div class="timeout-bar">
+  <div class="label">
+    <span>WAITING FOR UPSTREAM</span>
+    <span class="timing">30.000s</span>
+  </div>
+  <div class="bar-track">
+    <div class="bar-fill"></div>
+  </div>
+</div>
+
+<button class="retry-btn" onclick="location.reload()">⟳ RETRY REQUEST</button>
+
+<div class="footer">
+  <div class="id">REQ_ID · 504-T7K4-9J2M-N6X1</div>
+  <div>CONNECTION ABORTED AFTER TIMEOUT</div>
+</div>
+</body>
+</html>

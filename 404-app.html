@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 · App Not Found</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+              radial-gradient(ellipse at 50% 30%, #2a2a35 0%, #0d0d14 70%, #000000 100%);
+      background-color: #0d0d14;
+      color: #e6e8f0;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(230, 232, 240, 0.45);
+      letter-spacing: 0.15em;
+      z-index: 10;
+    }
+    .status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8b9eff;
+      box-shadow: 0 0 8px #8b9eff;
+      margin-right: 8px;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    .status-bar .code {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 232, 240, 0.6);
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* 中央应用图标网格容器 */
+    .grid-wrap {
+      position: relative;
+      width: 380px;
+      max-width: 90vw;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    /* 背景巨型 404 */
+    .big-code {
+      position: absolute;
+      font-size: 220px;
+      font-weight: 800;
+      color: rgba(139, 158, 255, 0.06);
+      letter-spacing: -0.05em;
+      user-select: none;
+      z-index: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* 应用图标网格 */
+    .app-grid {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      height: 200px;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 10px;
+    }
+
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #2a2a35 0%, #1a1a25 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .app-icon:hover {
+      transform: translateY(-4px);
+    }
+
+    /* 浮动动画 - 让图标有"主屏待机"感 */
+    .app-icon:nth-child(1) { animation: floaty 4s ease-in-out infinite 0s; }
+    .app-icon:nth-child(2) { animation: floaty 4s ease-in-out infinite 0.3s; }
+    .app-icon:nth-child(3) { animation: floaty 4s ease-in-out infinite 0.6s; }
+    .app-icon:nth-child(4) { animation: floaty 4s ease-in-out infinite 0.9s; }
+    .app-icon:nth-child(5) { animation: floaty 4s ease-in-out infinite 1.2s; }
+    .app-icon:nth-child(7) { animation: floaty 4s ease-in-out infinite 0.4s; }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+
+    /* 不同图标配色 */
+    .icon-msg {
+      background: linear-gradient(135deg, #34c759 0%, #28a745 100%);
+    }
+    .icon-cam {
+      background: linear-gradient(135deg, #5e5ce6 0%, #4a48c4 100%);
+    }
+    .icon-mail {
+      background: linear-gradient(135deg, #5ac8fa 0%, #007aff 100%);
+    }
+    .icon-music {
+      background: linear-gradient(135deg, #ff375f 0%, #ff2d55 100%);
+    }
+    .icon-sett {
+      background: linear-gradient(135deg, #8e8e93 0%, #636366 100%);
+    }
+    .icon-shop {
+      background: linear-gradient(135deg, #ff9500 0%, #ff3b30 100%);
+    }
+
+    /* 缺失的图标位置（空槽） */
+    .app-slot-empty {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(139, 158, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: emptyPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes emptyPulse {
+      0%, 100% {
+        border-color: rgba(139, 158, 255, 0.4);
+        box-shadow: 0 0 0 0 rgba(139, 158, 255, 0);
+      }
+      50% {
+        border-color: rgba(139, 158, 255, 0.9);
+        box-shadow: 0 0 16px 2px rgba(139, 158, 255, 0.3);
+      }
+    }
+
+    .app-slot-empty::before {
+      content: "?";
+      font-size: 28px;
+      font-weight: 700;
+      color: rgba(139, 158, 255, 0.6);
+      animation: questionBlink 1.6s ease-in-out infinite;
+    }
+    @keyframes questionBlink {
+      0%, 100% { opacity: 0.4; }
+      50%      { opacity: 1; }
+    }
+
+    /* 缺失标签 */
+    .missing-tag {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff375f;
+      color: white;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(255, 55, 95, 0.5);
+      z-index: 5;
+    }
+    .missing-tag::after {
+      content: "";
+      position: absolute;
+      bottom: -3px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 4px;
+      height: 4px;
+      background: #ff375f;
+    }
+
+    /* 图标 SVG 统一样式 */
+    .app-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: white;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 文案区 */
+    .message {
+      text-align: center;
+      z-index: 5;
+      max-width: 520px;
+    }
+    .message h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .message h1 .accent {
+      color: #8b9eff;
+    }
+    .message p {
+      font-size: 14px;
+      color: rgba(230, 232, 240, 0.55);
+      line-height: 1.6;
+    }
+    .message .mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 232, 240, 0.4);
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    /* 应用商店风信息卡 */
+    .app-info {
+      width: 360px;
+      max-width: 90vw;
+      background: rgba(139, 158, 255, 0.04);
+      border: 1px solid rgba(139, 158, 255, 0.18);
+      border-radius: 8px;
+      padding: 14px 20px;
+      z-index: 5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(230, 232, 240, 0.75);
+    }
+    .app-info .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed rgba(139, 158, 255, 0.1);
+    }
+    .app-info .row:last-child {
+      border-bottom: none;
+    }
+    .app-info .key {
+      color: rgba(230, 232, 240, 0.5);
+      letter-spacing: 0.1em;
+    }
+    .app-info .val {
+      color: #8b9eff;
+    }
+    .app-info .val.warn {
+      color: #ff375f;
+    }
+
+    /* 底部 */
+    .footer {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(230, 232, 240, 0.35);
+      letter-spacing: 0.2em;
+      text-align: center;
+      z-index: 5;
+    }
+    .footer .id {
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(230, 232, 240, 0.5);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .big-code { font-size: 150px; }
+      .app-grid { gap: 14px; }
+      .app-icon, .app-slot-empty { width: 54px; height: 54px; }
+      .message h1 { font-size: 20px; }
+      .app-info { font-size: 10px; padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="status-bar">
+  <div><span class="dot"></span>APP REGISTRY · MISSING</div>
+  <div class="code">404 APP NOT INSTALLED</div>
+</div>
+
+<div class="grid-wrap">
+  <div class="big-code">404</div>
+
+  <div class="app-grid">
+    <div class="app-icon icon-msg">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+    </div>
+    <div class="app-icon icon-cam">
+      <svg viewBox="0 0 24 24"><path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/><circle cx="12" cy="12" r="3.5"/></svg>
+    </div>
+    <div class="app-icon icon-mail">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </div>
+    <div class="app-icon icon-music">
+      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+    </div>
+
+    <div class="app-icon icon-sett">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </div>
+
+    <div class="app-slot-empty">
+      <div class="missing-tag">MISSING</div>
+    </div>
+
+    <div class="app-icon icon-shop">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="message">
+  <h1>应用<span class="accent">不存在</span>或已被卸载</h1>
+  <p>主屏上找不到您请求的应用。它可能已被卸载、转移到其他设备，或从未在此设备上安装过。</p>
+  <div class="mono">[app-registry/1.0 · 404 · APP_NOT_FOUND · installed=false]</div>
+</div>
+
+<div class="app-info">
+  <div class="row"><span class="key">APP_ID</span><span class="val warn">com.unknown.missing</span></div>
+  <div class="row"><span class="key">VERSION</span><span class="val warn">— not installed</span></div>
+  <div class="row"><span class="key">LAST_SEEN</span><span class="val">—</span></div>
+  <div class="row"><span class="key">SOURCE</span><span class="val">UNKNOWN</span></div>
+</div>
+
+<div class="footer">
+  <div class="id">REQ_ID · 404-X8N2-4L7D-V1M9</div>
+  <div>TRY INSTALLING FROM APP STORE</div>
+</div>
+</body>
+</html>
