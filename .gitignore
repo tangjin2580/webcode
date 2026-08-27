@@ -1,0 +1,16 @@
+# ===== IDE / 编辑器配置 =====
+.idea/
+.vscode/
+*.iml
+
+# ===== 操作系统文件 =====
+.DS_Store
+Thumbs.db
+
+# ===== 日志 =====
+*.log
+
+# ===== 依赖 / 构建产物（如后续引入） =====
+node_modules/
+dist/
+build/
