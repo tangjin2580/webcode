@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>webcode · HTTP 错误页模板</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; min-height: 100%;
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: #e6e8f0;
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 50% 0%, #25272e 0%, #0d0d0f 60%, #000 100%);
+      background-attachment: fixed;
+      padding: 56px 24px 80px;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 48px; }
+    .logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 52px;
+      letter-spacing: 0.04em;
+      background: linear-gradient(90deg, #6ea8fe, #b692ff);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+    .subtitle {
+      margin: 14px auto 0;
+      max-width: 620px;
+      color: rgba(230, 232, 240, 0.6);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .hint {
+      margin-top: 18px;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12.5px;
+      color: rgba(230, 232, 240, 0.45);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 6px 14px;
+    }
+    .hint .dot { width: 7px; height: 7px; border-radius: 50%; background: #57d08a; box-shadow: 0 0 10px #57d08a; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 20px 20px 18px;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent, #6ea8fe) 0%, transparent 55%);
+      opacity: 0; transition: opacity .18s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+    .card:hover::before { opacity: 0.10; }
+    .code {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 34px;
+      line-height: 1;
+      color: var(--accent, #6ea8fe);
+    }
+    .name { margin-top: 12px; font-weight: 600; font-size: 15px; }
+    .desc { margin-top: 6px; font-size: 12.5px; color: rgba(230,232,240,0.5); line-height: 1.5; }
+    .tag {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 10px; letter-spacing: .08em;
+      color: rgba(230,232,240,0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; padding: 2px 7px;
+    }
+    footer {
+      margin-top: 56px; text-align: center;
+      font-size: 12.5px; color: rgba(230,232,240,0.35);
+    }
+    footer a { color: rgba(230,232,240,0.55); text-decoration: none; }
+    footer a:hover { color: #b692ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1 class="logo">webcode</h1>
+      <p class="subtitle">一组 HTTP 状态码 / 边缘节点（CDN）错误页与提示页模板。纯静态 HTML，可直接用于 Web 服务器、反向代理或 CDN 的自定义错误页。</p>
+      <span class="hint"><span class="dot"></span>本仓库已启用 GitHub Pages · 404.html 自动作为站点 404 页</span>
+    </header>
+
+    <main class="grid">
+      <a class="card" style="--accent:#ff6b6b" href="403.html">
+        <span class="tag">403</span>
+        <div class="code">403</div>
+        <div class="name">Forbidden</div>
+        <div class="desc">禁止访问 · 无权限</div>
+      </a>
+      <a class="card" style="--accent:#6ea8fe" href="404.html">
+        <span class="tag">404</span>
+        <div class="code">404</div>
+        <div class="name">Page Not Found</div>
+        <div class="desc">页面不存在</div>
+      </a>
+      <a class="card" style="--accent:#6ea8fe" href="404-app.html">
+        <span class="tag">404</span>
+        <div class="code">404</div>
+        <div class="name">App Not Found</div>
+        <div class="desc">应用不存在</div>
+      </a>
+      <a class="card" style="--accent:#ffd166" href="429.html">
+        <span class="tag">429</span>
+        <div class="code">429</div>
+        <div class="name">Too Many Requests</div>
+        <div class="desc">请求过于频繁 · 限流</div>
+      </a>
+      <a class="card" style="--accent:#b692ff" href="465.html">
+        <span class="tag">465</span>
+        <div class="code">465</div>
+        <div class="name">Waiting Room</div>
+        <div class="desc">等待室 · 排队中</div>
+      </a>
+      <a class="card" style="--accent:#ffa94d" href="466.html">
+        <span class="tag">466</span>
+        <div class="code">466</div>
+        <div class="name">应用维护中</div>
+        <div class="desc">Maintenance · 暂停服务</div>
+      </a>
+      <a class="card" style="--accent:#4dd4ac" href="467.html">
+        <span class="tag">467</span>
+        <div class="code">467</div>
+        <div class="name">身份认证</div>
+        <div class="desc">Identity · 登录验证</div>
+      </a>
+      <a class="card" style="--accent:#5cc8ff" href="468.html">
+        <span class="tag">468</span>
+        <div class="code">468</div>
+        <div class="name">人机验证</div>
+        <div class="desc">Challenge · 验证码</div>
+      </a>
+      <a class="card" style="--accent:#ff8787" href="502.html">
+        <span class="tag">502</span>
+        <div class="code">502</div>
+        <div class="name">Bad Gateway</div>
+        <div class="desc">网关错误</div>
+      </a>
+      <a class="card" style="--accent:#ff8787" href="504.html">
+        <span class="tag">504</span>
+        <div class="code">504</div>
+        <div class="name">Gateway Timeout</div>
+        <div class="desc">网关超时</div>
+      </a>
+    </main>
+
+    <footer>
+      纯静态模板 · 无运行时依赖 ·
+      <a href="https://github.com/tangjin2580/webcode">tangjin2580/webcode</a>
+    </footer>
+  </div>
+</body>
+</html>
